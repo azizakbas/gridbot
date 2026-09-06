@@ -49,25 +49,19 @@
 -->
 
 <style>
+/* v3.3.55 — HER ZAMAN KARANLIK. Önce sistem ayarına uyuyordu; telefon
+   açık temadaysa sayfa bembeyaz açılıyordu ("ampül gibi parlıyor").
+   Gece bakılan bir ekran bu — panele çoğu zaman yatakta ya da karanlıkta
+   göz atılıyor. Sistem ayarına bırakmak yerine karara bağlandı. */
 :root{
-  --ink:#0b0b0b; --ink2:#52514e; --ink3:#8a8985;
-  --yuzey:#fcfcfb; --kart:#ffffff; --cizgi:#e6e5e1;
-  --mavi:#2a78d6; --mavi-ac:#eaf2fd;
-  --mor:#6b4fd6; --mor-ac:#f0ecfd;
-  --kehribar:#b87d00; --kehribar-ac:#fdf0d0;
-  --kirmizi:#c93636; --kirmizi-ac:#fadfdf;
-  --yesil:#1f8a4c;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --ink:#f4f3f0; --ink2:#b9b7b2; --ink3:#8a8985;
-    --yuzey:#111110; --kart:#1b1b1a; --cizgi:#2e2e2c;
-    --mavi:#6ea8f0; --mavi-ac:#16283f;
-    --mor:#a58cf0; --mor-ac:#241d3d;
-    --kehribar:#e0a83a; --kehribar-ac:#3a2c0d;
-    --kirmizi:#f08383; --kirmizi-ac:#3a1a1a;
-    --yesil:#5fc98a;
-  }
+  color-scheme: dark;
+  --ink:#f4f3f0; --ink2:#b9b7b2; --ink3:#8a8985;
+  --yuzey:#111110; --kart:#1b1b1a; --cizgi:#2e2e2c;
+  --mavi:#6ea8f0; --mavi-ac:#16283f;
+  --mor:#a58cf0; --mor-ac:#241d3d;
+  --kehribar:#e0a83a; --kehribar-ac:#3a2c0d;
+  --kirmizi:#f08383; --kirmizi-ac:#3a1a1a;
+  --yesil:#5fc98a;
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--yuzey);color:var(--ink);
