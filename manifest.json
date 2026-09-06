@@ -1,0 +1,19 @@
+{
+  "name": "Grid Bot",
+  "short_name": "Grid Bot",
+  "description": "Panel ve filo — güncel tünel adresiyle",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#111110",
+  "theme_color": "#111110",
+  "icons": [
+    {
+      "src": "ikon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

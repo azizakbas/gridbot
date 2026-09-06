@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+     role="img" aria-label="Grid Bot">
+  <rect width="512" height="512" rx="115" fill="#111110"/>
+  <line x1="82" y1="82.0" x2="430" y2="82.0" stroke="#2a78d6" stroke-width="25.6" stroke-linecap="round"/>
+  <line x1="82" y1="140.0" x2="430" y2="140.0" stroke="#3e8cdc" stroke-width="20.5" stroke-linecap="round"/>
+  <line x1="82" y1="198.0" x2="430" y2="198.0" stroke="#52a0e3" stroke-width="15.4" stroke-linecap="round"/>
+  <line x1="82" y1="256.0" x2="430" y2="256.0" stroke="#66b4ea" stroke-width="10.2" stroke-linecap="round"/>
+  <line x1="82" y1="314.0" x2="430" y2="314.0" stroke="#52a0e3" stroke-width="15.4" stroke-linecap="round"/>
+  <line x1="82" y1="372.0" x2="430" y2="372.0" stroke="#3e8cdc" stroke-width="20.5" stroke-linecap="round"/>
+  <line x1="82" y1="430.0" x2="430" y2="430.0" stroke="#2a78d6" stroke-width="25.6" stroke-linecap="round"/>
+  <circle cx="256" cy="256" r="27" fill="#ffffff"/>
+</svg>
