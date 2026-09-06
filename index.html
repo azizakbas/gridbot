@@ -121,6 +121,26 @@ button#yenile{font:inherit;font-size:13px;color:var(--ink2);
   padding:9px 15px;-webkit-tap-highlight-color:transparent}
 button#yenile:active{background:var(--cizgi)}
 #kurulum{margin-left:auto;text-align:right;max-width:56%}
+
+/* v3.3.56 — PANEL/FİLO UYGULAMANIN İÇİNDE AÇILIR.
+   Ana ekrandan açılan PWA yalnız KENDİ alanında tam ekran kalır; tünel
+   başka bir adres olduğu için Chrome onu adres çubuklu ayrı bir sekmede
+   açıyordu. Çözüm: sayfayı uygulamanın içinde, tam boy bir çerçevede
+   göstermek. Panel bunu engellemiyor (X-Frame-Options yok) ve anahtarı
+   çereze değil adrese bağlı taşıyor (mobil.html her isteğe location.search
+   ekliyor), yani üçüncü taraf çerez engeli de vurmuyor. */
+#cerceve{position:fixed;inset:0;background:var(--yuzey);z-index:50;
+  display:flex;flex-direction:column}
+#cerceve[hidden]{display:none}
+#chdr{display:flex;align-items:center;gap:10px;flex:0 0 auto;
+  padding:max(8px,env(safe-area-inset-top)) 12px 8px;
+  background:var(--kart);border-bottom:1px solid var(--cizgi)}
+#geri{font:inherit;font-size:15px;color:var(--ink);background:none;
+  border:0;padding:8px 10px;-webkit-tap-highlight-color:transparent}
+#cad{font-size:14px;font-weight:650;letter-spacing:-.2px}
+#disari{margin-left:auto;font-size:12.5px;color:var(--ink3);
+  text-decoration:none;padding:8px 6px}
+#cerceve iframe{flex:1;width:100%;border:0;background:var(--yuzey)}
 </style>
 </head>
 <body>
@@ -166,6 +186,15 @@ button#yenile:active{background:var(--cizgi)}
   <button id="yenile" type="button">Adresi yenile</button>
   <span id="kurulum"></span>
 </footer>
+
+<div id="cerceve" hidden>
+  <div id="chdr">
+    <button id="geri" type="button">‹ Geri</button>
+    <span id="cad"></span>
+    <a id="disari" target="_blank" rel="noopener">tarayıcıda aç</a>
+  </div>
+  <iframe id="cframe" title="Grid Bot" referrerpolicy="no-referrer"></iframe>
+</div>
 
 <script>
 "use strict";
@@ -300,10 +329,42 @@ async function cek(elle){
   }
 }
 
+/* --- panel/filo uygulamanın İÇİNDE açılsın ------------------------------ */
+function cerceveAc(url, ad){
+  $("#cframe").src = url;
+  $("#disari").href = url;
+  $("#cad").textContent = ad;
+  $("#cerceve").hidden = false;
+  document.body.style.overflow = "hidden";
+}
+function cerceveKapat(){
+  $("#cerceve").hidden = true;
+  $("#cframe").src = "about:blank";   /* arkada çalışmaya devam etmesin */
+  document.body.style.overflow = "";
+}
+for(const [id, ad] of [["#panel","PANEL"], ["#filo","FİLO"]]){
+  $(id).addEventListener("click", (e) => {
+    const url = $(id).getAttribute("href");
+    if(!url || url === "#") return;          /* adres yoksa hiçbir şey yapma */
+    e.preventDefault();
+    cerceveAc(url, ad);
+    /* Telefonun GERİ tuşu menüye dönsün — kullanıcı orayı bekler. */
+    try { history.pushState({acik: ad}, "", location.href); } catch(err){}
+  });
+}
+$("#geri").addEventListener("click", () => {
+  if(history.state && history.state.acik) history.back();
+  else cerceveKapat();
+});
+window.addEventListener("popstate", cerceveKapat);
+
 $("#yenile").addEventListener("click", () => cek(true));
 /* uygulama arkadan öne gelince linki tazele — tünel bu arada yenilenmiş olabilir */
 document.addEventListener("visibilitychange", () => {
-  if(document.visibilityState === "visible") cek(false);
+  /* Çerçeve açıkken tazeleme yapma: kullanıcı panelin içindeyken altındaki
+     menüyü yeniden çizmenin bir faydası yok, üstelik link.json'u boşuna
+     çeker. */
+  if(document.visibilityState === "visible" && $("#cerceve").hidden) cek(false);
 });
 
 (function(){
