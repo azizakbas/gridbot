@@ -207,10 +207,14 @@ const DEPO   = "gridbot.linkler";
 const AYAR   = "gridbot.ayar";
 
 function ayarOku(){
+  /* Adres üç parça taşır:  #<proje-ref>/<gizli-yol>/<panel-anahtarı>
+     Üçüncüsü v3.3.63'te eklendi: panel anahtarı artık BULUTA YAZILMIYOR,
+     yalnız bu kısayolda duruyor. Bulutta duran link anahtarsızdır; onu
+     bulan biri panele giremez. Linki telefon tamamlar. */
   const h = (location.hash || "").replace(/^#/, "").trim();
-  const m = h.match(/^([a-z0-9-]{8,})\/([0-9a-f]{16,64})$/i);
+  const m = h.match(/^([a-z0-9-]{8,})\/([0-9a-f]{16,64})(?:\/(.+))?$/i);
   if(m){
-    const a = {ref: m[1], yol: m[2]};
+    const a = {ref: m[1], yol: m[2], k: m[3] || ""};
     try { localStorage.setItem(AYAR, JSON.stringify(a)); } catch(e){}
     return a;
   }
@@ -260,8 +264,15 @@ function uyar(metin, kotu){
 }
 
 function dugmeleriKur(v){
+  const ayar = ayarOku();
+  const anahtarla = (u) => {
+    if(!u) return u;
+    if(!ayar || !ayar.k) return u;             /* eski kurulum: link hazır */
+    return u + (u.includes("?") ? "&" : "?")
+             + "k=" + encodeURIComponent(ayar.k);
+  };
   for(const [id, alan] of [["#panel","panel"], ["#filo","filo"]]){
-    const a = $(id), url = v && v[alan];
+    const a = $(id), url = anahtarla(v && v[alan]);
     if(url){ a.href = url; a.setAttribute("aria-disabled","false"); }
     else   { a.removeAttribute("href"); a.setAttribute("aria-disabled","true"); }
   }
