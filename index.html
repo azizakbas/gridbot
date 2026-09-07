@@ -340,17 +340,52 @@ async function cek(elle){
   }
 }
 
-/* --- panel/filo uygulamanın İÇİNDE açılsın ------------------------------ */
+/* --- panel/filo uygulamanın İÇİNDE açılsın ------------------------------ *
+ * v3.3.65 — Aziz: "geri tuşuna bastığımda ilk olarak beyaz ekran geliyor,
+ * menüye dönmek için ikinci kez basmam gerekiyor."
+ *
+ * SEBEP: geçmişte İKİ kayıt birikiyordu, oysa kod tek kayıt sanıyordu.
+ * Var olan bir iframe'e `src = url` ATAMASI bir GEZİNMEDİR ve tarayıcının
+ * ortak geçmişine kendi kaydını bırakır. Yığın şöyle oluyordu:
+ *
+ *     1) açılış menüsü
+ *     2) pushState  (bizim koyduğumuz "çerçeve açık" kaydı)
+ *     3) iframe'in kendi gezinme kaydı        <-- farkında değildik
+ *
+ * İlk GERİ 3'ü geri alıyor: iframe about:blank'e dönüyor — BEYAZ EKRAN —
+ * ama çerçeve hâlâ açık. İkinci GERİ 2'yi düşürüp menüye dönüyor.
+ * Üstelik kapanışta da `src="about:blank"` atanıyordu; o da bir gezinme,
+ * yani her açıp kapatma geçmişi sessizce şişiriyordu.
+ *
+ * ÇÖZÜM: iframe'e hiç GEZİNME yaptırma. Her açılışta YENİ bir iframe
+ * kurulur; yeni bir iframe'in İLK gidişi geçmişe kayıt bırakmaz (tarayıcı
+ * bunu "ilk yükleme" sayar, geri gidilecek bir öncesi yoktur). Kapanışta
+ * da about:blank'e gitmek yerine iframe TAMAMEN atılır — hem geçmiş temiz
+ * kalır, hem panel arkada çalışmaya devam edemez; boşaltmaktan daha kesin.
+ *
+ * Ayrıca pushState artık çerçeveden ÖNCE: geri tuşunun ilk basışta
+ * bulacağı kayıt, bizim kaydımız olmalı.                                  */
+function _cerceveIframe(url){
+  /* Eskisini DEĞİŞTİR, gezindirme. url verilmezse boş (about:blank) kalır
+     ve boş bir iframe hiçbir şey çalıştırmaz. */
+  const eski = $("#cframe");
+  const yeni = document.createElement("iframe");
+  yeni.id = "cframe";
+  yeni.title = "Grid Bot";
+  yeni.setAttribute("referrerpolicy", "no-referrer");
+  if(url) yeni.src = url;      /* DOM'a girmeden önce: ilk yükleme sayılır */
+  eski.replaceWith(yeni);
+}
 function cerceveAc(url, ad){
-  $("#cframe").src = url;
   $("#disari").href = url;
   $("#cad").textContent = ad;
+  _cerceveIframe(url);
   $("#cerceve").hidden = false;
   document.body.style.overflow = "hidden";
 }
 function cerceveKapat(){
   $("#cerceve").hidden = true;
-  $("#cframe").src = "about:blank";   /* arkada çalışmaya devam etmesin */
+  _cerceveIframe(null);        /* arkada çalışmaya devam etmesin */
   document.body.style.overflow = "";
 }
 for(const [id, ad] of [["#panel","PANEL"], ["#filo","FİLO"]]){
@@ -358,9 +393,10 @@ for(const [id, ad] of [["#panel","PANEL"], ["#filo","FİLO"]]){
     const url = $(id).getAttribute("href");
     if(!url || url === "#") return;          /* adres yoksa hiçbir şey yapma */
     e.preventDefault();
-    cerceveAc(url, ad);
-    /* Telefonun GERİ tuşu menüye dönsün — kullanıcı orayı bekler. */
+    /* ÖNCE kayıt, SONRA çerçeve: geri tuşu ilk basışta bunu bulsun.
+       Telefonun GERİ tuşu menüye dönsün — kullanıcı orayı bekler. */
     try { history.pushState({acik: ad}, "", location.href); } catch(err){}
+    cerceveAc(url, ad);
   });
 }
 $("#geri").addEventListener("click", () => {
